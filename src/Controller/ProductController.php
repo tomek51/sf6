@@ -3,12 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\CategoryRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProductController extends AbstractController
 {
@@ -47,4 +52,37 @@ class ProductController extends AbstractController
             'product' => $product
         ]);
     }
-}
+
+    /**
+     * 
+     * @Route("/admin/product/create", name ="product_create")
+     */
+    public function create(FormFactoryInterface $factory) {
+
+        $builder= $factory->createBuilder();
+
+        $builder ->add('name', TextType::class,[
+            'label' => 'Nom du produit',
+            'attr' => ['class' => 'form-control', 'placeholder' => 'Tapez le nom du produit']
+        ])
+        -> add('shortDescription', TextareaType::class, [
+            'label' => 'Description courte',
+            'attr' => [
+                'class' => 'form-control', 
+                'placeholder' => 'Tapez une description courte'
+            ]
+        ])
+        -> add('price', MoneyType::class, [
+            
+        ])
+        -> add('category');
+
+        $form = $builder->getForm();
+
+    $formView = $form->createView();
+
+        return $this->render('product/create.html.twig', [
+            'formView' => $formView
+        ]);
+    }
+}      
